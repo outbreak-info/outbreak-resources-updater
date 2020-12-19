@@ -4,7 +4,7 @@ immport_covid:
   crawler_host: api.outbreak.info
   uploader_host: api.outbreak.info
   alias_name: outbreak-resources-immport-covid
-  crontab: @weekly
+  crontab: "@weekly"
 
 zenodo_covid:
   crawler: zenodo_covid
@@ -12,4 +12,4 @@ zenodo_covid:
   crawler_host: api.outbreak.info
   uploader_host: api.outbreak.info
   alias_name: outbreak-resources-zenodo-covid
-  crontab: @daily
+  crontab: "@daily"
