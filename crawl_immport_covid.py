@@ -8,7 +8,11 @@ import argparse
 from typing import Optional
 
 script_dir = os.path.abspath(os.path.dirname(__file__))
-sys.path.append(os.path.join(script_dir, 'biothings.crawler'))
+crawler_dir = os.path.join(script_dir, 'biothings.crawler')
+sys.path.append(crawler_dir)
+
+# Scrapy
+os.environ['SCRAPY_PROJECT'] = crawler_dir
 
 # patch PATH so local venv is in PATH
 bin_path = os.path.join(script_dir, 'venv/bin')
@@ -16,6 +20,7 @@ os.environ['PATH'] += os.pathsep + bin_path
 # patch PATH so interpreter dir is also in PATH
 os.environ['PATH'] += os.pathsep + \
                       os.path.abspath(os.path.dirname(sys.executable))
+
 
 from scrapy.spiderloader import SpiderLoader
 from scrapy.crawler import CrawlerProcess
