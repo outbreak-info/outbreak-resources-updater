@@ -12,7 +12,7 @@ crawler_dir = os.path.join(script_dir, 'biothings.crawler')
 sys.path.append(crawler_dir)
 
 # Scrapy
-os.environ['SCRAPY_PROJECT'] = crawler_dir
+os.environ['SCRAPY_SETTINGS_MODULE'] = 'crawler.settings'
 
 # patch PATH so local venv is in PATH
 bin_path = os.path.join(script_dir, 'venv/bin')
