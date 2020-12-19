@@ -10,4 +10,4 @@ if __name__ == '__main__':
         entry = "* * * * *"
         if crontab_match(entry, t):
             print(t)
-        time.sleep(60 - t.second)
+        time.sleep(60 - t.second - t.microsecond/1000000)

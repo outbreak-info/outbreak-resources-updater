@@ -7,10 +7,11 @@ import yaml
 import argparse
 from typing import Optional
 
-os.chdir(os.path.abspath(os.path.dirname(__file__)))
-sys.path.append(os.path.abspath('./biothings.crawler'))
+script_dir = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(os.path.join(script_dir, 'biothings.crawler'))
+
 # patch PATH so local venv is in PATH
-bin_path = os.path.join(os.getcwd(), 'venv/bin')
+bin_path = os.path.join(script_dir, 'venv/bin')
 os.environ['PATH'] += os.pathsep + bin_path
 # patch PATH so interpreter dir is also in PATH
 os.environ['PATH'] += os.pathsep + \
