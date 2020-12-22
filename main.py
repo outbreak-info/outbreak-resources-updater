@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 import argparse
 import datetime
 import multiprocessing
@@ -93,7 +94,10 @@ def perform_crawl_and_update(
         es_host_c: str, es_host_u: str,
         es_idx_c: Optional[str] = None,
         es_idx_u: Optional[str] = None,
+        log_path: str = None
 ):
+    if log_path is not None:
+        logging.basicConfig(filename=log_path)
     es_crawler = Elasticsearch(es_host_c)
     es_uploader = Elasticsearch(es_host_u)
     if es_idx_c is None or es_idx_u is None:
@@ -129,6 +133,7 @@ def perform_crawl_and_update(
 
 if __name__ == '__main__':
     multiprocessing.set_start_method('spawn')
+    logging.basicConfig(format='%(asctime)s %(message)s')
     # load environment
     scrapy_settings = get_project_settings()
     spiders = SpiderLoader.from_settings(scrapy_settings).list()
@@ -199,28 +204,47 @@ if __name__ == '__main__':
         if 'crontab' in v:
             pass
         else:
+            t = datetime.datetime.now()
+            log_path = f"{k}_{t.strftime('%Y%m%dT%H%M%S')}.log"
+            kwa = {'log_path': log_path}
+            kwa.update(v)
             p = multiprocessing.Process(target=perform_crawl_and_update,
-                                        kwargs=v)
-            print(f"Executing {k} once ...")
+                                        kwargs=kwa)
+            logging.info("Executing %s once ...", k)
             p.start()
-            p.join()
+            # does not wait for it to end
             tasks.pop(k)
 
+    # exit if no recurring tasks
     if len(tasks) == 0:
         sys.exit(0)
 
     # handle the remaining
+    running_tasks = {}
     while True:
         t = datetime.datetime.now()
-        print(f"Current time is {t}")
+        running_tasks_names = list(running_tasks.keys())
+        for task_name in running_tasks_names:
+            p = running_tasks[task_name]
+            if p.is_alive():
+                continue
+            else:
+                running_tasks.pop(task_name)
+                logging.info("%s finished running.", task_name)
         for k, v in tasks.items():
             crontab_entry = v.pop('crontab')
             if crontab_match(crontab_entry, t):
+                if k in running_tasks:
+                    logging.warning("Task %s is not yet completed, not run.")
+                    continue
+                log_path = f"{k}_{t.strftime('%Y%m%dT%H%M%S')}.log"
+                kwa = {'log_path': log_path}
+                kwa.update(v)
                 p = multiprocessing.Process(target=perform_crawl_and_update,
-                                            kwargs=v)
-                print(f"Executing {k} ...")
+                                            kwargs=kwa)
+                running_tasks[k] = p
+                logging.info("executing %s ...", k)
                 p.start()
-                p.join()
 
         t = datetime.datetime.now()
         time.sleep(60 - t.second - t.microsecond/1000000)
