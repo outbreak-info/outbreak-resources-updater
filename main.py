@@ -222,6 +222,9 @@ if __name__ == '__main__':
     # handle the remaining
     running_tasks = {}
     while True:
+        # FIXME: I just noticed that chromedriver doesn't quit after
+        #  running the crawlers. Should implement something that kills
+        #  all my chrome/chromedriver process when nothing is running.
         t = datetime.datetime.now()
         running_tasks_names = list(running_tasks.keys())
         for task_name in running_tasks_names:
