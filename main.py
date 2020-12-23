@@ -235,7 +235,7 @@ if __name__ == '__main__':
                 running_tasks.pop(task_name)
                 logging.info("%s finished running.", task_name)
         for k, v in tasks.items():
-            crontab_entry = v.pop('crontab')
+            crontab_entry = v.get('crontab')
             if crontab_match(crontab_entry, t):
                 if k in running_tasks:
                     logging.warning("Task %s is not yet completed, not run.")
