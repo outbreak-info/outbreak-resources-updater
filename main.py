@@ -97,6 +97,7 @@ def perform_crawl_and_update(
         es_idx_u: Optional[str] = None,
         log_path: str = None
 ):
+    # FIXME: somehow it is still littering standard output
     if log_path is not None:
         logging.basicConfig(filename=log_path)
     es_crawler = Elasticsearch(es_host_c)
