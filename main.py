@@ -6,6 +6,7 @@ import datetime
 import multiprocessing
 import time
 import uuid
+from copy import deepcopy
 from typing import Optional
 
 import yaml
@@ -235,14 +236,14 @@ if __name__ == '__main__':
                 running_tasks.pop(task_name)
                 logging.info("%s finished running.", task_name)
         for k, v in tasks.items():
-            crontab_entry = v.get('crontab')
+            kwa = deepcopy(v)
+            crontab_entry = kwa.pop('crontab')
             if crontab_match(crontab_entry, t):
                 if k in running_tasks:
                     logging.warning("Task %s is not yet completed, not run.")
                     continue
                 log_path = f"{k}_{t.strftime('%Y%m%dT%H%M%S')}.log"
-                kwa = {'log_path': log_path}
-                kwa.update(v)
+                kwa['log_path'] = log_path
                 p = multiprocessing.Process(target=perform_crawl_and_update,
                                             kwargs=kwa)
                 running_tasks[k] = p
