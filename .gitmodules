@@ -1,4 +1,3 @@
 [submodule "biothings.crawler"]
 	path = biothings.crawler
-	url = https://github.com/zcqian/biothings.crawler.git
-	branch = immport_covid
+	url = https://github.com/biothings/biothings.crawler.git
